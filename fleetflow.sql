@@ -13,6 +13,10 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('fleet_manager','dispatcher','safety_officer','financial_analyst') NOT NULL DEFAULT 'dispatcher',
+    phone VARCHAR(10) NULL,
+    otp_code VARCHAR(10) NULL,
+    otp_expires DATETIME NULL,
+    otp_attempts INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_role (role)
@@ -114,48 +118,48 @@ CREATE TABLE IF NOT EXISTS fuel_expenses (
 -- ─────────────────────────────────────────
 
 -- Users (passwords are bcrypt of 'password123')
-INSERT INTO users (name, email, password, role) VALUES
-('Alice Morgan',    'manager@fleetflow.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'fleet_manager'),
-('Bob Chen',        'dispatch@fleetflow.com',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'dispatcher'),
-('Carol Stevens',   'safety@fleetflow.com',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'safety_officer'),
-('David Park',      'finance@fleetflow.com',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'financial_analyst');
+INSERT INTO users (name, email, password, role, phone) VALUES
+('Rajesh Kumar',  'rajesh.kumar@fleetflow.in',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'fleet_manager', '9876543210'),
+('Amit Patel',    'amit.patel@fleetflow.in',    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'dispatcher', '9123456789'),
+('Priya Sharma',  'priya.sharma@fleetflow.in',  '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'safety_officer', '8877665544'),
+('Sneha Verma',   'sneha.verma@fleetflow.in',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'financial_analyst', '7766554433');
 
 -- Vehicles
 INSERT INTO vehicles (model, license_plate, max_capacity, odometer, status, year) VALUES
-('Volvo FH16 750',      'TRK-001-AA', 24000, 142500, 'Available',     2021),
-('Mercedes Actros 1845','TRK-002-BB', 22000, 98300,  'On Trip',       2020),
-('MAN TGX 18.510',      'TRK-003-CC', 20000, 210800, 'In Shop',       2019),
-('DAF XF 480',          'TRK-004-DD', 18000, 55700,  'Available',     2022),
-('Scania R500',         'TRK-005-EE', 26000, 178400, 'Out of Service',2018);
+('Tata Ace Gold',          'MP09 AB 1234', 1000, 42500,  'Available',     2022),
+('Ashok Leyland Dost',     'DL01 CV 4582', 1250, 28300,  'On Trip',       2021),
+('Mahindra Bolero Pickup', 'MH12 TR 9087', 1700, 60800,  'In Shop',       2020),
+('Tata Intra V30',         'RJ14 GA 3321', 1300, 15700,  'Available',     2023),
+('Eicher Pro 2049',        'UP32 BN 5566', 2500, 78400,  'Out of Service',2019);
 
 -- Drivers
 INSERT INTO drivers (name, license_number, license_expiry, safety_score, status, phone) VALUES
-('James Wilson',   'DL-2024-001', '2026-08-15', 98,  'Available', '+1-555-0101'),
-('Maria Santos',   'DL-2024-002', '2025-03-10', 91,  'On Duty',   '+1-555-0102'),
-('Kevin O\'Brien',  'DL-2024-003', '2024-11-30', 76,  'Available', '+1-555-0103'),
-('Lisa Zhang',     'DL-2024-004', '2026-12-01', 95,  'Available', '+1-555-0104'),
-('Omar Hassan',    'DL-2024-005', '2027-05-20', 88,  'Suspended', '+1-555-0105'),
-('Tanya Brooks',   'DL-2024-006', '2026-09-30', 100, 'Available', '+1-555-0106');
+('Mahesh Yadav',    'DL-IND-2024-01', '2026-08-15', 98,  'Available', '9876500001'),
+('Suresh Chauhan',  'DL-IND-2024-02', '2025-03-10', 91,  'On Duty',   '9876500002'),
+('Rakesh Meena',    'DL-IND-2024-03', '2024-11-30', 76,  'Available', '9876500003'),
+('Deepak Tiwari',   'DL-IND-2024-04', '2026-12-01', 95,  'Available', '9876500004'),
+('Vijay Pal',       'DL-IND-2024-05', '2027-05-20', 88,  'Suspended', '9876500005'),
+('Manoj Kumar',     'DL-IND-2024-06', '2026-09-30', 100, 'Available', '9876500006');
 
 -- Trips
 INSERT INTO trips (vehicle_id, driver_id, origin, destination, cargo_description, cargo_weight, status, scheduled_date, completed_date, distance_km) VALUES
-(2, 2, 'Chicago, IL',  'Detroit, MI',   'Auto Parts',      18500, 'Dispatched', CURDATE(), NULL,       450),
-(1, 1, 'Dallas, TX',   'Houston, TX',   'Retail Goods',    12000, 'Completed',  DATE_SUB(CURDATE(),INTERVAL 3 DAY), DATE_SUB(CURDATE(),INTERVAL 2 DAY), 390),
-(4, 4, 'Phoenix, AZ',  'Las Vegas, NV', 'Electronics',     9800,  'Completed',  DATE_SUB(CURDATE(),INTERVAL 7 DAY), DATE_SUB(CURDATE(),INTERVAL 6 DAY), 480),
-(1, 6, 'Seattle, WA',  'Portland, OR',  'Building Supplies',14000,'Draft',      DATE_ADD(CURDATE(),INTERVAL 2 DAY), NULL,       280);
+(2, 2, 'Indore, MP',   'Bhopal, MP',   'Auto Parts',      850,   'Dispatched', CURDATE(), NULL,       195),
+(1, 1, 'Delhi',        'Jaipur, RJ',   'Retail Goods',    500,   'Completed',  DATE_SUB(CURDATE(),INTERVAL 3 DAY), DATE_SUB(CURDATE(),INTERVAL 2 DAY), 270),
+(4, 4, 'Mumbai, MH',   'Pune, MH',     'Electronics',     900,   'Completed',  DATE_SUB(CURDATE(),INTERVAL 7 DAY), DATE_SUB(CURDATE(),INTERVAL 6 DAY), 150),
+(1, 6, 'Ahmedabad, GJ','Mumbai, MH',   'Medical Supplies',400,   'Draft',      DATE_ADD(CURDATE(),INTERVAL 2 DAY), NULL,       530);
 
 -- Maintenance Logs
 INSERT INTO maintenance_logs (vehicle_id, service_type, description, cost, service_date, technician, status) VALUES
-(3, 'Engine Overhaul',    'Full engine rebuild due to oil leak',          4500.00, DATE_SUB(CURDATE(),INTERVAL 2 DAY), 'Mike Turner',    'In Progress'),
-(5, 'Brake Replacement',  'Front and rear brake pads and rotors replaced',1200.00, DATE_SUB(CURDATE(),INTERVAL 14 DAY),'Sam Rodriguez',  'Completed'),
-(1, 'Oil Change',         'Synthetic 15W-40 full service',                 350.00, DATE_SUB(CURDATE(),INTERVAL 30 DAY),'Mike Turner',    'Completed'),
-(2, 'Tire Rotation',      'All 6 tires rotated and balanced',              280.00, DATE_SUB(CURDATE(),INTERVAL 5 DAY), 'Sam Rodriguez',  'Completed');
+(3, 'Engine Service',     'Oil change and filter replacement',            4500.00, DATE_SUB(CURDATE(),INTERVAL 2 DAY), 'Suresh Verma',   'In Progress'),
+(5, 'Brake Repair',       'Brake pad replacement and drum cleaning',      3200.00, DATE_SUB(CURDATE(),INTERVAL 14 DAY),'Amit Kashyap',   'Completed'),
+(1, 'General Checkup',    'Routine maintenance and alignment',            1500.00, DATE_SUB(CURDATE(),INTERVAL 30 DAY),'Suresh Verma',   'Completed'),
+(2, 'Tyre Rotation',      'Alignment and wheel balancing',                 1200.00, DATE_SUB(CURDATE(),INTERVAL 5 DAY), 'Amit Kashyap',   'Completed');
 
 -- Fuel Expenses
 INSERT INTO fuel_expenses (vehicle_id, liters, cost_per_liter, odometer_reading, expense_date, station) VALUES
-(1, 180.00, 1.45, 142000, DATE_SUB(CURDATE(),INTERVAL 4 DAY),  'Shell - I-35'),
-(2, 220.00, 1.52, 97800,  DATE_SUB(CURDATE(),INTERVAL 1 DAY),  'Pilot - I-94'),
-(4, 150.00, 1.48, 55400,  DATE_SUB(CURDATE(),INTERVAL 8 DAY),  'Love\'s - US-60'),
-(1, 195.00, 1.50, 141500, DATE_SUB(CURDATE(),INTERVAL 12 DAY), 'TA - I-45'),
-(3, 160.00, 1.44, 210300, DATE_SUB(CURDATE(),INTERVAL 3 DAY),  'Petro - I-10'),
-(2, 200.00, 1.55, 97200,  DATE_SUB(CURDATE(),INTERVAL 9 DAY),  'Pilot - I-90');
+(1, 40.00, 95.45, 42000, DATE_SUB(CURDATE(),INTERVAL 4 DAY),  'HP Petrol - Indore'),
+(2, 60.00, 96.52, 27800,  DATE_SUB(CURDATE(),INTERVAL 1 DAY),  'Indian Oil - Delhi'),
+(4, 45.00, 94.48, 15400,  DATE_SUB(CURDATE(),INTERVAL 8 DAY),  'Bharat Petroleum - Jaipur'),
+(1, 35.00, 95.50, 41500, DATE_SUB(CURDATE(),INTERVAL 12 DAY), 'HP Petrol - Bhopal'),
+(3, 50.00, 95.44, 60300,  DATE_SUB(CURDATE(),INTERVAL 3 DAY),  'Indian Oil - Mumbai'),
+(2, 45.00, 96.55, 27200,  DATE_SUB(CURDATE(),INTERVAL 9 DAY),  'Bharat Petroleum - Pune');
