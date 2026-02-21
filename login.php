@@ -4,7 +4,7 @@ require_once __DIR__ . '/config/database.php';
 
 // Already logged in
 if (!empty($_SESSION['user_id'])) {
-    header('Location: /fleetflow/dashboard.php');
+    header('Location: dashboard.php');
     exit;
 }
 
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($pass, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user']    = $user;
-        header('Location: /fleetflow/dashboard.php');
+        header('Location: dashboard.php');
         exit;
     } else {
         $error = 'Invalid email or password.';
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — FleetFlow</title>
-    <link rel="stylesheet" href="/fleetflow/assets/css/app.css">
+    <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
 <div class="login-page">
@@ -44,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p>Fleet & Logistics Management</p>
         </div>
 
+        <?= flash() ?>
         <?php if ($error): ?>
         <div class="alert alert-error"><?= e($error) ?></div>
         <?php endif; ?>
@@ -60,6 +61,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Sign In</button>
             </div>
+            <div style="margin-top:8px; text-align:right;">
+                <a href="forgot_password.php" style="color:var(--text-sm);text-decoration:none;font-size:12px;">Forgot Password?</a>
+            </div>
+            <div style="margin-top:16px; text-align:center;">
+                <p style="font-size:13px;color:var(--text-sm);">Don't have an account? <a href="register.php" style="color:var(--primary);font-weight:600;text-decoration:none;">Create Account</a></p>
+            </div>
         </form>
 
         <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
@@ -73,6 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-<script src="/fleetflow/assets/js/app.js"></script>
+<script src="assets/js/app.js"></script>
 </body>
 </html>
