@@ -52,4 +52,3 @@ FleetFlow utilizes a **premium, light-themed aesthetic** with a focus on visual 
 
 ---
 
-Developed with ❤️ by the FleetFlow Team.
