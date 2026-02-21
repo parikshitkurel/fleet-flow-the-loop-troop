@@ -83,7 +83,7 @@ include __DIR__ . '/includes/header.php';
         <div class="kpi-icon" style="background:#fee2e220;">💰</div>
         <div>
             <div class="kpi-label">Total Op. Cost</div>
-            <div class="kpi-value" style="font-size:20px;">$<?= number_format($opCost, 0) ?></div>
+            <div class="kpi-value" style="font-size:20px;">₹<?= number_format($opCost, 0) ?></div>
             <div class="kpi-sub">fuel + maintenance</div>
         </div>
     </div>
