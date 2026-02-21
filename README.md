@@ -211,7 +211,7 @@ Backend:
 
 Database:
 
-* MySQL / MariaDB
+* MySQL
 * Relational schema with foreign key constraints
 * Structured linking between vehicles, drivers, trips, and expenses
 
@@ -283,12 +283,12 @@ git clone https://github.com/your-repo/fleetflow.git
 
 2. Import the database:
 
-* Import `fleetflow.sql` into MySQL or MariaDB.
+* Import `fleetflow.sql` into MySQL.
 * Update `config/database.php` with your credentials.
 
 3. Run locally:
 
-* Use XAMPP, Laragon, or equivalent local server.
+* Use XAMPP, or equivalent local server.
 * Access via:
 
 [http://localhost/fleetflownew/](http://localhost/fleetflownew/)
@@ -301,4 +301,5 @@ git clone https://github.com/your-repo/fleetflow.git
 * REST API for third-party integrations
 * Multi-branch fleet architecture
 * Advanced analytical dashboards
+
 
