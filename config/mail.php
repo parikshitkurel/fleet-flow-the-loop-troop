@@ -9,7 +9,7 @@
 define('MAIL_DEBUG', true); // Set to false in production
 
 // ─── CREDENTIALS ────────────────────────────────────────────
-define('BREVO_API_KEY',   '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'); // Get from ReadME file
+define('BREVO_API_KEY',   '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');
 define('MAIL_FROM_EMAIL', 'parikshitkurel@gmail.com');
 define('MAIL_FROM_NAME',  'FleetFlow System');
 
@@ -18,8 +18,8 @@ define('MAIL_FROM_NAME',  'FleetFlow System');
  * Replacement for PHPMailer to avoid library dependencies and SMTP issues.
  */
 function sendOTPEmail($toEmail, $otp) {
-    if (empty(BREVO_API_KEY) || BREVO_API_KEY === 'REPLACE_WITH_YOUR_BREVO_SMTP_API_KEY') {
-        error_log("Brevo API Key is not configured.");
+    if (empty(BREVO_API_KEY) || str_contains(BREVO_API_KEY, 'REPLACE_WITH')) {
+        error_log("Brevo API Key is not configured correctly.");
         return false;
     }
 
@@ -66,13 +66,14 @@ function sendOTPEmail($toEmail, $otp) {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'accept: application/json',
-        'api-key: ' . BREVO_API_KEY,
+        'api-key: ' . trim(BREVO_API_KEY),
         'content-type: application/json'
     ]);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
     curl_setopt($ch, CURLOPT_TIMEOUT, 20);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // For local XAMPP environments often lacking CA bundles
 
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -82,9 +83,17 @@ function sendOTPEmail($toEmail, $otp) {
     if ($httpCode >= 200 && $httpCode < 300) {
         return true;
     } else {
-        error_log("Brevo API Error ($httpCode): $response $curlError");
+        $errorMsg = "Brevo API Error ($httpCode): $response " . ($curlError ? " | cURL Error: $curlError" : "");
+        error_log($errorMsg);
         if (MAIL_DEBUG) {
-            echo "<!-- API Debug: Code $httpCode, Response $response -->";
+            // Store debug info in session to show on next page load or for inspection
+            $_SESSION['mail_debug'] = $errorMsg;
+            // Also echo for immediate inspection if running scripts
+            if (php_sapi_name() === 'cli' || defined('STDIN')) {
+                echo "\n[DEBUG] $errorMsg\n";
+            } else {
+                echo "<!-- MAIL DEBUG: $errorMsg -->";
+            }
         }
         return false;
     }
@@ -111,4 +120,3 @@ function testEmailConfig($testEmail) {
         return false;
     }
 }
-
