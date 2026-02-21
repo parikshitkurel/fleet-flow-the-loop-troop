@@ -9,7 +9,7 @@
 define('MAIL_DEBUG', true); // Set to false in production
 
 // ─── CREDENTIALS ────────────────────────────────────────────
-define('BREVO_API_KEY',   'REPLACE_WITH_YOUR_BREVO_SMTP_API_KEY'); // Get from ReadME file
+define('BREVO_API_KEY',   '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'); // Get from ReadME file
 define('MAIL_FROM_EMAIL', 'parikshitkurel@gmail.com');
 define('MAIL_FROM_NAME',  'FleetFlow System');
 
@@ -111,3 +111,4 @@ function testEmailConfig($testEmail) {
         return false;
     }
 }
+
